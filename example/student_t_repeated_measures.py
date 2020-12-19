@@ -1,5 +1,6 @@
 import sys
 import os
+from scipy import stats
 import tenseal as ts
 
 sys.path.append(os.path.abspath('../../tensealstat'))
@@ -23,8 +24,15 @@ sample_1_encoded = ts.ckks_vector(context, sample_1)
 statistic_encoded = tt.encode_student_t_repeated_measures(context, sample_0_encoded, sample_1_encoded)
 
 # 4 done by the key holder
-p_value, t_statistic = tt.decode_student_t_repeated_measures(context, statistic_encoded)
+t_statistic, p_value = tt.decode_student_t_repeated_measures(context, statistic_encoded)
 
 # p value should be about 0.94
-print('p_value: ' + str(p_value))
+print('via tensealstat')
 print('t_statistic: ' + str(t_statistic))
+print('p_value: ' + str(p_value))
+
+t_statistic, p_value = stats.ttest_rel(sample_0 ,sample_1)
+print('')
+print('via scipy')
+print('t_statistic: ' + str(t_statistic))
+print('p_value: ' + str(1 - (p_value / 2)))
