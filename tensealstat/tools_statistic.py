@@ -2,13 +2,12 @@ import math
 import tenseal as ts
 import copy
 from scipy.stats import t
-
+from scipy.stats import f
 
 #TODO everying should be jsonable or pickalble
 #TODO make sure to handle the public and private keys better
 
 class ToolsStatistic:
-
 
     #
     # Primitive section
@@ -97,15 +96,41 @@ class ToolsStatistic:
         return list_value_sorted_encoded
         
 
+    # Working primitives
+
+    @staticmethod
+    def sqr(context, scalar):
+        return scalar * scalar
+    
+    @staticmethod
+    def count_all(context, list_sample_encoded):
+        count = 0 
+        for sample_encoded in list_sample_encoded:
+            count += sample_encoded.size()
+        return count
+    
+
     @staticmethod
     def sum(context, sample_encoded):
         ones_encoded = ts.ckks_vector(context, [1] * sample_encoded.size())
         return sample_encoded.dot(ones_encoded)
+        
+    @staticmethod
+    def sum_all(context, list_sample):
+        sum = ToolsStatistic.encode_scalar(context, 0)
+        for sample in list_sample:
+            sum += sample.dot(ts.ckks_vector(context, [1] * sample.size()))
+        return sum
     
     @staticmethod
     def mean(context, sample_encoded):
         scale = ts.ckks_vector(context, [1 / sample_encoded.size()])
         return ToolsStatistic.sum(context, sample_encoded) * scale
+
+    @staticmethod
+    def mean_all(context, list_sample):
+        scale = ToolsStatistic.encode_scalar(context, 1 / ToolsStatistic.count_all(context, list_sample))
+        return ToolsStatistic.sum_all(context, list_sample) * scale
 
     @staticmethod
     def variance(context, sample_encoded):
@@ -156,7 +181,9 @@ class ToolsStatistic:
         p_value = t.cdf(t_statistic, degrees_of_freedom)
         return t_statistic, p_value
 
-
+    #
+    # student_t_repeated_measures
+    #
 
     @staticmethod
     def encode_student_t_repeated_measures(context, sample_0_encoded, sample_1_encoded):
@@ -189,12 +216,84 @@ class ToolsStatistic:
         p_value = t.cdf(t_statistic, degrees_of_freedom)
         return t_statistic, p_value
 
+    #
+    # anova_one_way
+    #
+    
+    @staticmethod
+    def encode_anova_one_way(context, list_sample):
+        size = list_sample[0].size()
+        for sample in list_sample:
+            if sample.size() != size:
+                raise Exception('Samples should be of equal size')
+
+        count_sample = len(list_sample)
+        count_total = ToolsStatistic.count_all(context, list_sample)
+        mean_total = ToolsStatistic.mean_all(context, list_sample)
+        
+        list_sample_mean = []
+        for sample in list_sample:
+            list_sample_mean.append(ToolsStatistic.mean(context, sample))
+    
+        sstr = ToolsStatistic.encode_scalar(context, 0.0)
+        for sample, mean_sample in zip(list_sample, list_sample_mean):
+            sstr += ToolsStatistic.encode_scalar(context, sample.size()) * ToolsStatistic.sqr(context, mean_sample - mean_total)
+
+        sse = ToolsStatistic.encode_scalar(context, 0.0)
+        for sample, sample_mean in zip(list_sample, list_sample_mean):
+            sse += (sample - sample_mean).dot(sample - sample_mean)
+        #FTransform
+
+        degrees_of_freedom_0 = (count_sample - 1.0)
+        degrees_of_freedom_1 = (count_total - count_sample)
+        summed_variance = sstr * ToolsStatistic.encode_scalar(context, 1 / degrees_of_freedom_0)
+        total_variance = sse * ToolsStatistic.encode_scalar(context, 1 / degrees_of_freedom_1)
 
 
-    #     # d / (sqt v / sqr n)
-    # @staticmethod
-    # def zstatistic(context, enc_data):
-    #     enc_mean = ToolsStatistic.mean(context, enc_data)
-    #     scale = ts.ckks_vector(context, [1 / (enc_data.size() - 1)])
-    #     return (enc_data - enc_mean).dot(enc_data - enc_mean) * scale
+        
+        
+        #TODO these all need to get pickled properly or jsonsed or something so they can be moved over http
+        statistic_encoded = {}
+        statistic_encoded['type_statistic'] = 'anova_one_way'
+        statistic_encoded['degrees_of_freedom_0'] = degrees_of_freedom_0
+        statistic_encoded['degrees_of_freedom_1'] = degrees_of_freedom_1
+        statistic_encoded['summed_variance'] = summed_variance
+        statistic_encoded['total_variance'] = total_variance
+        return statistic_encoded
+    
+    @staticmethod
+    def decode_anova_one_way(context, statistic_encoded):
+        if not statistic_encoded['type_statistic'] == 'anova_one_way':
+            raise Exception('Incorrect type_statistic: ' +  statistic_encoded['type_statistic'])
+
+        degrees_of_freedom_0 = statistic_encoded['degrees_of_freedom_0']
+        degrees_of_freedom_1 = statistic_encoded['degrees_of_freedom_1']
+        summed_variance = statistic_encoded['summed_variance'].decrypt()[0] 
+        total_variance = statistic_encoded['total_variance'].decrypt()[0]
+        
+        f_statistic = summed_variance / total_variance
+        p_value = f.cdf(f_statistic, degrees_of_freedom_0, degrees_of_freedom_1)
+        return f_statistic, p_value
+
+
+    #
+    # anova_repeated_measures
+    #
+    
+    @staticmethod
+    def encode_anova_repeated_measures(context, list_sample_encoded):
+        size_0 = list_sample_encoded[0].size()
+        for sample_encoded in list_sample_encoded:
+            if sample_encoded.size() != size_0:
+                raise Exception('Samples should be of equal size')
+
+        
+        #TODO these all need to get pickled properly or jsonsed or something so they can be moved over http
+        statistic_encoded = {}
+        statistic_encoded['type_statistic'] = 'anova_repeated_measures'
+        statistic_encoded['mean_difference_encoded'] = 0
+        statistic_encoded['variance_encoded'] = 0
+        statistic_encoded['variance_rescale'] = 0
+        statistic_encoded['degrees_of_freedom'] = degrees_of_freedom
+        return statistic_encoded
 

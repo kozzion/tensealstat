@@ -9,6 +9,7 @@ sys.path.append(os.path.abspath('../../tensealstat'))
 
 from tensealstat.tools_context import ToolsContext as tc
 from tensealstat.tools_statistic import ToolsStatistic as tt
+from tensealstat.tools_statistic_test import ToolsStatisticTest as ttt
 
 # m=1024 # enc 26 sec 
 np.random.seed = 73
