@@ -3,6 +3,26 @@ import tenseal as ts
 
 class ToolsContext:
 
+
+    # @staticmethod
+    # def get_context_high():
+    #     poly_mod_degree = 32768
+    #     coeff_mod_bit_sizes = [60, 40, 40, 40, 40, 40, 60] # for better accuracy
+    #     context = ts.context(ts.SCHEME_TYPE.CKKS, poly_mod_degree, -1, coeff_mod_bit_sizes)
+    #     context.global_scale = 2 ** 60
+    #     context.generate_galois_keys()
+    #     return context
+
+    @staticmethod
+    def get_context_high():
+        poly_mod_degree = 17384
+        coeff_mod_bit_sizes = [60, 40, 40, 40, 40, 40, 60] # for better accuracy
+        context = ts.context(ts.SCHEME_TYPE.CKKS, poly_mod_degree, -1, coeff_mod_bit_sizes)
+        context.global_scale = 2 ** 41
+        context.generate_galois_keys()
+        return context
+
+
     @staticmethod
     def get_context_default():
         poly_mod_degree = 16384

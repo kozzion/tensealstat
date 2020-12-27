@@ -10,3 +10,7 @@ Computation proceeds in 4 steps
 2. The data holders encrypt their data using the public key and send it to the agregator
 3. The agregator uses the public key and the encrypted data to compute encrypted statistics and sends those to the key holder 
 4. The key holder uses the private key to decrypt the statistics and publishes these to the data owners
+
+
+# python -m pip install git+https://github.com/OpenMined/TenSEAL/tree/v0.3.0a1
+# pip install --upgrade --force-reinstall -e git://github.com/OpenMined/TenSEAL.git@v0.3.0a1#egg=tenseal
