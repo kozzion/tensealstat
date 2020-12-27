@@ -1,5 +1,6 @@
 import math
 from tensealstat.algebra.abstract_algebra import AbstractAlgebra
+from tensealstat.test.test_assertion import TestAssertion
 
 class Levene(object):
 
@@ -13,6 +14,11 @@ class Levene(object):
     def list_test_assertion_0_hypothesys():
         return [
             TestAssertion.SamplesHaveEqualVariances]
+
+    # TODO equal to one way anova?
+    # TODO check against
+    # TODO implement 3 mean variants
+    # http://www.itl.nist.gov/div898/handbook/eda/section3/eda35a.htm
 
     @staticmethod
     def encode_statistic(algebra:AbstractAlgebra, list_sample):
@@ -35,5 +41,5 @@ class Levene(object):
 
 
         f_statistic = (degrees_of_freedom_1 * summed_varriance) / (degrees_of_freedom_0 * total_variance);
-        p_value f.cdf(f_statistic, degrees_of_freedom_0, degrees_of_freedom_1, )
+        p_value = f.cdf(f_statistic, degrees_of_freedom_0, degrees_of_freedom_1)
         return f_statistic, p_value
