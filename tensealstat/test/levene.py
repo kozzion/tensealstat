@@ -17,7 +17,6 @@ class Levene(object):
 
     # TODO equal to one way anova?
     # TODO check against
-    # TODO implement 3 mean variants
     # http://www.itl.nist.gov/div898/handbook/eda/section3/eda35a.htm
 
     @staticmethod
