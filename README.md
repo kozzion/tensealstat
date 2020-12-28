@@ -3,8 +3,16 @@ A library for homomorphic statistics using tenseal
 
 
 # install: 
-pip install --upgrade --force-reinstall https://github.com/kozzion/tensealstat
 
+pip install git+https://github.com/kozzion/tensealstat@0.1.0
+
+To update:
+
+pip install git+https://github.com/kozzion/tensealstat@0.1.0 --upgrade
+
+To update with latest repo code:
+
+pip install git+https://github.com/kozzion/tensealstat@0.1.0 --upgrade --force-reinstall
 
 # usage
 
