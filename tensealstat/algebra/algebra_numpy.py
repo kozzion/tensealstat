@@ -15,13 +15,13 @@ class AlgebraNumpy(AbstractAlgebra):
     def size_vector(self, vector):
         return len(vector)
 
-    def encode_scalar(self, scalar):
+    def encrypt_scalar(self, scalar):
         return scalar
 
-    def encode_scalar_inv(self, scalar):
+    def encrypt_scalar_inv(self, scalar):
         return 1/scalar
 
-    def decode_scalar(self, scalar):
+    def decrypt_scalar(self, scalar):
         return scalar
 
 
@@ -55,13 +55,13 @@ class AlgebraNumpy(AbstractAlgebra):
     def sum_measurement(self, list_sample):
         list_sum_measurement = []
         for index_measurement in range(len(list_sample[0])):
-            list_sum_measurement.append(self.encode_scalar(0))
+            list_sum_measurement.append(self.encrypt_scalar(0))
             for sample in list_sample:
                 list_sum_measurement[index_measurement] += sample[index_measurement]
         return list_sum_measurement
 
     def sum_squared_all(self, list_sample):
-        sum_squared_all = self.encode_scalar(0)
+        sum_squared_all = self.encrypt_scalar(0)
         for sample in list_sample:
             for measurement in sample:
                 sum_squared_all += self.sqr(measurement)
@@ -78,10 +78,10 @@ class AlgebraNumpy(AbstractAlgebra):
         return (sample - mean).dot(sample - mean) / (len(sample) - 1)
         #return np.var(sample) #BAD!!!
 
-    def variance_pooled(self, sample_0_encoded, sample_1_encoded):
-        mean_0_encoded = self.mean(sample_0_encoded) #TODO these means can be avoided
-        mean_1_encoded = self.mean(sample_1_encoded)
-        variance_0_encoded = (sample_0_encoded - mean_0_encoded).dot(sample_0_encoded - mean_0_encoded)
-        variance_1_encoded = (sample_1_encoded - mean_1_encoded).dot(sample_1_encoded - mean_1_encoded)
-        scale = ts.ckks_vector(self, [1 / (sample_0_encoded.size() + sample_1_encoded.size() - 2)])
-        return (variance_0_encoded + variance_1_encoded) * scale
+    def variance_pooled(self, sample_0_encryptd, sample_1_encryptd):
+        mean_0_encryptd = self.mean(sample_0_encryptd) #TODO these means can be avoided
+        mean_1_encryptd = self.mean(sample_1_encryptd)
+        variance_0_encryptd = (sample_0_encryptd - mean_0_encryptd).dot(sample_0_encryptd - mean_0_encryptd)
+        variance_1_encryptd = (sample_1_encryptd - mean_1_encryptd).dot(sample_1_encryptd - mean_1_encryptd)
+        scale = ts.ckks_vector(self, [1 / (sample_0_encryptd.size() + sample_1_encryptd.size() - 2)])
+        return (variance_0_encryptd + variance_1_encryptd) * scale

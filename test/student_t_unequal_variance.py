@@ -10,10 +10,10 @@ sys.path.append(os.path.abspath('../../tensealstat'))
 from tensealstat.tools_context import ToolsContext as tc
 from tensealstat.algebra.algebra_numpy import AlgebraNumpy
 from tensealstat.algebra.algebra_tenseal import AlgebraTenseal
-from tensealstat.statistic.student_t_repeated_measures import StudentTRepeatedMeasures
+from tensealstat.statistic.student_t_unequal_variance import StudentTUnequalVariance
 
 
-statistic_generator = StudentTRepeatedMeasures()
+statistic_generator = StudentTUnequalVariance()
 #
 # This test follows Larsen Marc 4Th edition P790
 #
@@ -24,8 +24,8 @@ algebra_tenseal = AlgebraTenseal(context)
 algebra_numpy = AlgebraNumpy()
 
 # 2 done by the data holders
-sample_0 = np.array([14.6, 17.3, 10.9, 12.8, 16.6, 12.2, 11.2, 15.4, 14.8, 16.2])
-sample_1 = np.array([13.8, 15.4, 11.3, 11.6, 16.4, 12.6, 11.8, 15.0, 14.4, 15.0])
+sample_0 = np.array([17.2, 20.9, 22.6, 18.1, 21.7, 21.4, 23.5, 24.2, 14.7, 21.8])
+sample_1 = np.array([21.5, 22.8, 21.0, 23.0, 21.6, 23.6, 22.5, 20.7, 23.4, 21.8, 20.7, 21.7, 21.5, 22.5, 23.6, 21.5, 22.5, 23.5, 21.5, 21.8])
 list_sample = [sample_0, sample_1]
 list_sample_encrypted = [algebra_tenseal.encrypt_vector(sample) for sample in list_sample] 
 
