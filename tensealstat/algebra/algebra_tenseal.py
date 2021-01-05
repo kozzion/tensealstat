@@ -39,10 +39,10 @@ class AlgebraTenseal(AbstractAlgebra):
     def sqr(self, scalar):
         return scalar * scalar
     
-    def count_all(self, list_sample_encryptd):
+    def count_all(self, list_sample):
         count = 0 
-        for sample_encryptd in list_sample_encryptd:
-            count += sample_encryptd.size()
+        for sample in list_sample:
+            count += sample.size()
         return count
     
     def sum(self, sample:ts.ckks_vector):
@@ -83,14 +83,14 @@ class AlgebraTenseal(AbstractAlgebra):
         return self.sum_all(list_sample) * scale
 
     def variance(self, sample):
-        mean_encryptd = self.mean(sample)
+        mean = self.mean(sample)
         scale = self.encrypt_scalar_inv(sample.size() - 1)
-        return (sample - mean_encryptd).dot(sample - mean_encryptd) * scale
+        return (sample - mean).dot(sample - mean) * scale
 
-    def variance_pooled(self, sample_0_encryptd, sample_1_encryptd):
-        mean_0_encryptd = self.mean(sample_0_encryptd) #TODO these means can be avoided
-        mean_1_encryptd = self.mean(sample_1_encryptd)
-        variance_0_encryptd = (sample_0_encryptd - mean_0_encryptd).dot(sample_0_encryptd - mean_0_encryptd)
-        variance_1_encryptd = (sample_1_encryptd - mean_1_encryptd).dot(sample_1_encryptd - mean_1_encryptd)
-        scale = self.encrypt_scalar_inv(sample_0_encryptd.size() + sample_1_encryptd.size() - 2)
-        return (variance_0_encryptd + variance_1_encryptd) * scale
+    def variance_pooled(self, sample_0, sample_1):
+        mean_0 = self.mean(sample_0) #TODO these means can be avoided
+        mean_1 = self.mean(sample_1)
+        variance_0 = (sample_0 - mean_0).dot(sample_0 - mean_0)
+        variance_1 = (sample_1 - mean_1).dot(sample_1 - mean_1)
+        scale = 1 / (sample_0.size() + sample_1.size() - 2)
+        return (variance_0 + variance_1) * scale

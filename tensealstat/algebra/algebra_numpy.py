@@ -15,6 +15,9 @@ class AlgebraNumpy(AbstractAlgebra):
     def size_vector(self, vector):
         return len(vector)
 
+    def encrypt_list(self, list):
+        return np.array(list)
+
     def encrypt_scalar(self, scalar):
         return scalar
 
@@ -78,10 +81,10 @@ class AlgebraNumpy(AbstractAlgebra):
         return (sample - mean).dot(sample - mean) / (len(sample) - 1)
         #return np.var(sample) #BAD!!!
 
-    def variance_pooled(self, sample_0_encryptd, sample_1_encryptd):
-        mean_0_encryptd = self.mean(sample_0_encryptd) #TODO these means can be avoided
-        mean_1_encryptd = self.mean(sample_1_encryptd)
-        variance_0_encryptd = (sample_0_encryptd - mean_0_encryptd).dot(sample_0_encryptd - mean_0_encryptd)
-        variance_1_encryptd = (sample_1_encryptd - mean_1_encryptd).dot(sample_1_encryptd - mean_1_encryptd)
-        scale = ts.ckks_vector(self, [1 / (sample_0_encryptd.size() + sample_1_encryptd.size() - 2)])
-        return (variance_0_encryptd + variance_1_encryptd) * scale
+    def variance_pooled(self, sample_0, sample_1):
+        mean_0 = self.mean(sample_0) #TODO these means can be avoided
+        mean_1 = self.mean(sample_1)
+        variance_0 = (sample_0 - mean_0).dot(sample_0 - mean_0)
+        variance_1 = (sample_1 - mean_1).dot(sample_1 - mean_1)
+        scale = 1 / (len(sample_0) + len(sample_1) - 2)
+        return (variance_0 + variance_1) * scale

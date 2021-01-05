@@ -46,7 +46,7 @@ print('p_value: ' + str(p_value))
 # Test version
 algebra_numpy = AlgebraNumpy()
 
-statistic_encrypted = AnovaOneWay.encrypt_statistic(algebra_numpy, list_sample)
+statistic_encrypted = statistic_generator.encrypt_statistic(algebra_numpy, list_sample)
 f_statistic, degrees_of_freedom_0, degrees_of_freedom_1 = statistic_generator.decrypt_statistic(algebra_numpy, statistic_encrypted)
 p_value = f.cdf(f_statistic, degrees_of_freedom_0, degrees_of_freedom_1)
 print('')

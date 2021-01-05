@@ -34,8 +34,8 @@ class StudentTRepeatedMeasures(object):
         if not statistic_encoded['type_statistic'] == 'student_t_repeated_measures':
             raise Exception('Incorrect statistic')
     
-        mean_difference = algebra.decode_scalar(statistic_encoded['mean_difference'])
-        variance = algebra.decode_scalar(statistic_encoded['variance'])
+        mean_difference = algebra.decrypt_scalar(statistic_encoded['mean_difference'])
+        variance = algebra.decrypt_scalar(statistic_encoded['variance'])
         variance_rescale = statistic_encoded['variance_rescale']
         degrees_of_freedom = statistic_encoded['degrees_of_freedom']
 
