@@ -19,9 +19,6 @@ This test follows Larsen Marc 4Th edition P779
 '''
 # 1 done by the key holder
 context = tc.get_context_default()
-print("Automatic relinearization is:", ("on" if context.auto_relin else "off"))
-print("Automatic rescaling is:", ("on" if context.auto_rescale else "off"))
-print("Automatic modulus switching is:", ("on" if context.auto_mod_switch else "off"))
 algebra_tenseal = AlgebraTenseal(context)
 
 
@@ -35,7 +32,7 @@ list_sample_encrypted = [algebra_tenseal.encrypt_vector(sample) for sample in li
 # 3 done by the agregator
 statistic_encrypted = statistic_generator.encrypt_statistic(algebra_tenseal, list_sample_encrypted)
 
-# # 4 done by the key holder
+# 4 done by the key holder
 f_statistic_sample, f_statistic_measurement, degrees_of_freedom_0_sample, degrees_of_freedom_0_measurement, degrees_of_freedom_1 = statistic_generator.decode_statistic(algebra_tenseal, statistic_encrypted)
 p_value_sample = f.cdf(f_statistic_sample, degrees_of_freedom_0_sample, degrees_of_freedom_1)
 p_value_measurement = f.cdf(f_statistic_measurement, degrees_of_freedom_0_measurement, degrees_of_freedom_1)
@@ -72,8 +69,8 @@ sample_0 = [13.8, 12.9, 25.9, 18.0, 15.2]
 sample_1 = [11.7, 16.7, 29.8, 23.1, 20.2]
 sample_2 = [14.0, 15.5, 27.8, 23.0, 19.0]
 sample_3 = [12.6, 13.8, 25.0, 16.9, 13.7]
-
-list_sample = [sample_0, sample_1, sample_2, sample_3]
+list_sample = [sample_0, sample_1, sample_2]
+list_sample_encrypted = [algebra_tenseal.encrypt_vector(sample) for sample in list_sample] 
 
 statistic_encrypted = statistic_generator.encrypt_statistic(algebra_numpy, list_sample)
 f_statistic_sample, f_statistic_measurement, degrees_of_freedom_0_sample, degrees_of_freedom_0_measurement, degrees_of_freedom_1 = statistic_generator.decode_statistic(algebra_numpy, statistic_encrypted)
